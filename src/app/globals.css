@@ -1,0 +1,879 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap');
+
+/* ==========================================================================
+   SISTEMA DE DISEÑO NEO-BRUTALIST (VIBRANT & HIGH CONTRAST)
+   ========================================================================== */
+
+:root {
+  /* Paleta Neo-Brutalist */
+  --bg-app:          #ff5e97; /* Hot Pink de Fondo */
+  --bg-card:         #ccff00; /* Neon Lime / Chartreuse */
+  --bg-card-hover:   #d4ff2a;
+  --bg-glass:        #ccff00;
+  --bg-glass-heavy:  #000000; /* Fondo Negro Sólido para barras de navegación */
+  
+  /* Bordes Gruesos Negros */
+  --border-light:    3px solid #000000;
+  --border-medium:   3px solid #000000;
+  --border-active:   3px solid #000000;
+
+  /* Colores de Estado */
+  --state-success:   #00cc7a; /* Verde Check-In */
+  --state-warning:   #ffb300; /* Naranja */
+  --state-danger:    #ff3b30; /* Rojo */
+  --state-info:      #00bfff; /* Celeste */
+  --state-pending:   #af52de; /* Púrpura */
+
+  /* Textos */
+  --text-primary:    #000000;
+  --text-secondary:  #000000;
+  --text-muted:      #1a1a1a;
+
+  /* Sombras Planas (Splat / Hard Shadows) */
+  --shadow-sm:       3px 3px 0px #000000;
+  --shadow-md:       6px 6px 0px #000000;
+  --shadow-lg:       8px 8px 0px #000000;
+  --shadow-glow:     6px 6px 0px #000000;
+  --shadow-success:  6px 6px 0px #000000;
+  --shadow-cyan:     6px 6px 0px #000000;
+
+  /* Radios */
+  --radius-xs:       8px;
+  --radius-sm:       12px;
+  --radius-md:       16px;
+  --radius-lg:       20px;
+  --radius-xl:       24px;
+  --radius-full:     9999px;
+
+  /* Tipografía */
+  --font-primary:    'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Transición Brutal */
+  --transition-fast: 0.1s linear;
+  --transition-normal: 0.15s linear;
+}
+
+/* ==========================================================================
+   RESET & SETUP GENERAL
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.4;
+  font-size: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+/* Fondo decorativo */
+.bg-gradient-mesh {
+  display: none; /* Estilo plano, no queremos gradientes en Neo-Brutalismo */
+}
+
+/* ==========================================================================
+   ESTRUCTURA DE DISEÑO & CONTENEDORES
+   ========================================================================== */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 24px;
+  padding-bottom: 110px;
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    padding: 40px;
+    padding-bottom: 40px;
+  }
+}
+
+/* ==========================================================================
+   TARJETAS NEO-BRUTALISTAS
+   ========================================================================== */
+.card {
+  background: var(--bg-card);
+  border: var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+  color: #000000 !important;
+}
+
+.card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--shadow-lg);
+  background: var(--bg-card-hover);
+}
+
+.card-glass {
+  background: var(--bg-card);
+  border: var(--border-medium);
+  border-radius: var(--radius-md);
+}
+
+/* ==========================================================================
+   BOTONES NEO-BRUTALISTAS (EFECTO HUNDIMIENTO)
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: var(--border-medium);
+  background: #ffffff;
+  color: #000000;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #000000;
+}
+
+.btn:disabled {
+  background: #e4e4e7 !important;
+  color: #a1a1aa !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: not-allowed;
+}
+
+/* Variaciones de Botón */
+.btn-primary {
+  background: #ffffff;
+  color: #000000;
+}
+.btn-primary:hover {
+  background: #f4f4f5;
+}
+
+.btn-success {
+  background: var(--state-success);
+  color: #000000;
+}
+.btn-success:hover {
+  background: #00e68a;
+}
+
+.btn-danger {
+  background: var(--state-danger);
+  color: #ffffff;
+}
+.btn-danger:hover {
+  background: #ff5247;
+}
+
+.btn-ghost {
+  background: #ffffff;
+  color: #000000;
+}
+
+.btn-lg {
+  padding: 16px 36px;
+  font-size: 16px;
+  border-radius: var(--radius-md);
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: var(--radius-xs);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* ==========================================================================
+   BOTÓN HERO DE REGISTRO (CHECK-IN)
+   ========================================================================== */
+.checkin-btn {
+  width: 210px;
+  height: 70px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: var(--border-medium);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+  color: #000000;
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+  outline: none;
+}
+
+.checkin-btn:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.checkin-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0px #000000;
+}
+
+.checkin-btn-entrada {
+  background: var(--state-success);
+}
+
+.checkin-btn-salida {
+  background: var(--state-info);
+}
+
+.checkin-btn:disabled {
+  background: #e4e4e7;
+  color: #a1a1aa;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   INPUTS DE ALTO CONTRASTE (BLANCOS CON BORDE GRUESO)
+   ========================================================================== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 900;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-input {
+  background: #ffffff;
+  border: var(--border-medium);
+  border-radius: var(--radius-xs);
+  padding: 14px 18px;
+  color: #000000;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  width: 100%;
+  box-shadow: 2px 2px 0px #000000;
+}
+
+.form-input:focus {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px #000000;
+  background: #ffffff;
+}
+
+.form-input::placeholder {
+  color: #71717a;
+}
+
+.form-input option {
+  background: #ffffff;
+  color: #000000;
+}
+
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--bg-glass-heavy);
+  border-top: var(--border-medium);
+  padding: 10px 0 env(safe-area-inset-bottom);
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 -4px 0px rgba(0, 0, 0, 0.15);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  color: #a1a1aa;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-item svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+  stroke: currentColor;
+}
+
+
+.nav-item.active {
+  color: var(--bg-card); /* Neon Lime */
+}
+
+.nav-item.active svg {
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   SIDEBAR NAV (ESCRITORIO)
+   ========================================================================== */
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: var(--bg-glass-heavy);
+  border-right: var(--border-medium);
+  padding: 32px 20px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+}
+
+@media (min-width: 1024px) {
+  .sidebar { display: flex; }
+  .mobile-nav { display: none; }
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  margin-bottom: 32px;
+}
+
+.sidebar-logo-icon {
+  width: 42px;
+  height: 42px;
+  background: var(--bg-card);
+  border: var(--border-medium);
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-logo-icon svg {
+  stroke: #000000;
+}
+
+.sidebar-logo-text {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.sidebar-logo-sub {
+  font-size: 11px;
+  color: var(--bg-card);
+  font-weight: 800;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-xs);
+  color: #a1a1aa;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+  background: none;
+  border: 1px solid transparent;
+  width: 100%;
+}
+
+.sidebar-nav-item svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-nav-item.active {
+  background: var(--bg-card);
+  color: #000000;
+  border: var(--border-medium);
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-nav-item.active svg {
+  stroke: #000000;
+}
+
+.sidebar-section-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: #71717a;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 24px 16px 8px;
+}
+
+/* ==========================================
+   TOPBAR
+   ========================================== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  border-bottom: var(--border-medium);
+  padding-bottom: 20px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: var(--border-medium);
+}
+
+.topbar-left h1 {
+  font-size: 26px;
+  font-weight: 900;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+.topbar-left p {
+  font-size: 13px;
+  color: #3f3f46;
+  font-weight: 600;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: #000000;
+  box-shadow: 2px 2px 0px #000000;
+}
+
+/* ==========================================================================
+   BADGES / INSIGNIAS
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  border: var(--border-medium);
+  box-shadow: 2px 2px 0px #000000;
+  color: #000000 !important;
+}
+
+.badge-green  { background: var(--state-success); }
+.badge-yellow { background: var(--state-warning); }
+.badge-red    { background: var(--state-danger); }
+.badge-blue   { background: var(--state-info); }
+.badge-purple { background: var(--state-pending); }
+.badge-gray   { background: #ffffff; }
+
+/* ==========================================================================
+   KPI STATS CARDS
+   ========================================================================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 24px; }
+}
+
+.stat-card {
+  background: #ffffff;
+  border: var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.stat-card::before {
+  display: none; /* Quitar barra de color sutil */
+}
+
+.stat-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border: var(--border-medium);
+  background: var(--bg-card); /* Neon Lime */
+  color: #000000;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 900;
+  color: #000000;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #3f3f46;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   TABLAS NEO-BRUTALISTAS
+   ========================================================================== */
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: var(--border-medium);
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  background: #ffffff;
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 900;
+  color: #000000;
+  text-transform: uppercase;
+  border-bottom: var(--border-medium);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 16px 20px;
+  border-bottom: var(--border-medium);
+  color: #000000;
+  font-weight: 600;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: rgba(204, 255, 0, 0.05); /* Chartreuse ultra claro al hover */
+}
+
+/* ==========================================================================
+   CALENDARIO
+   ========================================================================== */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 900;
+  color: #000000;
+  padding: 8px 0;
+  text-transform: uppercase;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+  font-size: 14px;
+  font-weight: 800;
+  border: var(--border-medium);
+  background: #ffffff;
+  box-shadow: 2px 2px 0px #000000;
+  transition: all var(--transition-fast);
+}
+
+.calendar-day:hover:not(.calendar-day-empty) {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px #000000;
+}
+
+.calendar-day-empty { opacity: 0; border: none; box-shadow: none; }
+
+.calendar-day-presente { background: var(--state-success); }
+.calendar-day-tarde { background: var(--state-warning); }
+.calendar-day-falta { background: var(--state-danger); color: #ffffff !important; }
+.calendar-day-descanso { background: var(--state-info); }
+.calendar-day-vacaciones { background: var(--state-pending); color: #ffffff !important; }
+.calendar-day-futuro { color: #a1a1aa; background: #f4f4f5; border: 1px solid #d4d4d8; box-shadow: none; }
+.calendar-day-hoy { border: 3px double #000000; background: #ffffff; }
+
+/* ==========================================================================
+   ANILLO Y GPS DETECTOR (PANTALLA REGISTRO)
+   ========================================================================== */
+.location-ring {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: var(--border-medium);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.location-ring-outer {
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  border: 2px dashed #000000;
+  animation: rotate-ring 30s linear infinite;
+}
+
+.location-ring-inner {
+  position: absolute;
+  inset: 30px;
+  border-radius: 50%;
+  border: 1px solid #000000;
+}
+
+.location-dot-work {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--state-info);
+  border-radius: 50%;
+  border: var(--border-medium);
+  box-shadow: 2px 2px 0px #000000;
+}
+
+.gps-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #000000;
+  background: #ffffff;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: var(--border-medium);
+  box-shadow: var(--shadow-sm);
+}
+
+.gps-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #000000;
+}
+
+.gps-dot-ok { background: var(--state-success); }
+.gps-dot-searching { background: var(--state-warning); }
+.gps-dot-error { background: var(--state-danger); }
+
+/* ==========================================================================
+   RECIBO DE NÓMINA (TIPO VOUCHER FÍSICO)
+   ========================================================================== */
+.payroll-card {
+  background: #ffffff;
+  border: var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  color: #000000;
+}
+
+.payroll-header {
+  border-bottom: 2px dashed #000000;
+  padding-bottom: 20px;
+}
+
+.payroll-row {
+  border-bottom: 1px solid #000000;
+  padding: 12px 0;
+  font-weight: 600;
+}
+
+.payroll-row.total {
+  border-top: 3px double #000000;
+  border-bottom: none;
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.payroll-amount-total {
+  color: #000000;
+}
+
+/* ==========================================================================
+   ALERTAS
+   ========================================================================== */
+.alert {
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: var(--border-medium);
+  box-shadow: var(--shadow-sm);
+  color: #000000 !important;
+}
+
+.alert-success { background: var(--state-success); }
+.alert-error   { background: var(--state-danger); color: #ffffff !important; }
+.alert-warning { background: var(--state-warning); }
+.alert-info    { background: var(--state-info); }
+
+/* ==========================================================================
+   MODALES
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal {
+  background: #ffffff;
+  border: var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ==========================================================================
+   PÁGINA DE LOGIN NEO-BRUTALISTA
+   ========================================================================== */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg-app);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-card); /* Neon Lime */
+  border: var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 48px 40px;
+  box-shadow: var(--shadow-lg);
+  color: #000000;
+}
+
+.login-logo-icon {
+  width: 56px;
+  height: 56px;
+  background: #ffffff;
+  border: var(--border-medium);
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.login-logo-icon svg {
+  stroke: #000000;
+}
+
+.login-title {
+  font-size: 32px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+.login-subtitle {
+  font-size: 13px;
+  font-weight: 800;
+  color: #000000;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
