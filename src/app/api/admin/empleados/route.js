@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { getDb, initDb } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { calcularNomina, fechaHoy } from "@/lib/utils";
 
 // GET: Todos los empleados con estado de hoy (admin)
 export async function GET(request) {
   try {
     await initDb();
-    const session = await getSession();
-    if (!session || session.rol !== "admin") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-    }
+    
+    // 1. Autorizar
+    const { error } = await requireAdmin(request);
+    if (error) return error;
 
     const { searchParams } = new URL(request.url);
     const vista = searchParams.get("vista"); // "hoy" | "nomina"
@@ -116,7 +116,7 @@ export async function GET(request) {
 
     return NextResponse.json({ empleados: resumen, pendientes });
   } catch (error) {
-    console.error(error);
+    console.error("Get admin employees error:", error);
     return NextResponse.json({ error: "Error del servidor" }, { status: 500 });
   }
 }

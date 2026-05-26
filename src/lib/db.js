@@ -23,6 +23,16 @@ export function getDb() {
 export async function initDb() {
   const db = getDb();
 
+  // Activar WAL mode si es base de datos local
+  const url = process.env.DB_URL || `file:${dbPath}`;
+  if (url.startsWith("file:")) {
+    try {
+      await db.execute("PRAGMA journal_mode=WAL;");
+    } catch (err) {
+      console.warn("⚠️ No se pudo activar el modo WAL:", err.message);
+    }
+  }
+
   await db.executeMultiple(`
     CREATE TABLE IF NOT EXISTS usuarios (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,12 +81,42 @@ export async function initDb() {
       lat_trabajo REAL DEFAULT 20.966667,
       lng_trabajo REAL DEFAULT -89.623333,
       radio_metros INTEGER DEFAULT 100,
-      horario_entrada TEXT DEFAULT '09:00',
+      horario_entrada TEXT DEFAULT '09:00',  -- Horario por defecto
       horario_salida TEXT DEFAULT '18:00',
       tarifa_hora_extra REAL DEFAULT 1.5
     );
 
     INSERT OR IGNORE INTO configuracion (id) VALUES (1);
+
+    CREATE TABLE IF NOT EXISTS token_blocklist (
+      jti        TEXT    PRIMARY KEY,
+      expires_at INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_asistencias_usuario_fecha
+      ON asistencias (usuario_id, fecha);
+
+    CREATE INDEX IF NOT EXISTS idx_solicitudes_estado
+      ON solicitudes (estado);
+
+    CREATE INDEX IF NOT EXISTS idx_blocklist_expires
+      ON token_blocklist (expires_at);
+
+    CREATE TABLE IF NOT EXISTS logs_auditoria (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      usuario_id INTEGER NOT NULL,
+      usuario_email TEXT NOT NULL,
+      accion TEXT NOT NULL,
+      detalles TEXT,
+      creado_en TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_auditoria_usuario_id
+      ON logs_auditoria (usuario_id);
+
+    CREATE INDEX IF NOT EXISTS idx_auditoria_fecha
+      ON logs_auditoria (creado_en);
   `);
 
   // Crear admin por defecto si no existe

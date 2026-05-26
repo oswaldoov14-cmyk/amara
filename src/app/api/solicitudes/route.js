@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 import { getDb, initDb } from "@/lib/db";
-import { getSession } from "@/lib/auth";
-import { fechaHoy } from "@/lib/utils";
+import { requireAuth, requireAdmin } from "@/lib/auth";
+import { validate, crearSolicitudSchema, responderSolicitudSchema } from "@/lib/validation";
+import { registrarAccion } from "@/lib/audit";
 
 // GET: Solicitudes (empleado: las suyas; admin: todas o filtradas)
 export async function GET(request) {
   try {
     await initDb();
-    const session = await getSession();
-    if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    
+    // 1. Autenticar
+    const { user: session, error } = await requireAuth(request);
+    if (error) return error;
 
     const { searchParams } = new URL(request.url);
     const estado = searchParams.get("estado");
@@ -36,7 +39,7 @@ export async function GET(request) {
     const { rows } = await db.execute({ sql, args });
     return NextResponse.json({ solicitudes: rows });
   } catch (error) {
-    console.error(error);
+    console.error("Get requests error:", error);
     return NextResponse.json({ error: "Error del servidor" }, { status: 500 });
   }
 }
@@ -45,16 +48,28 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     await initDb();
-    const session = await getSession();
-    if (!session || session.rol !== "empleado") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    
+    // 1. Autenticar (requiere que el usuario esté logueado como empleado, o simplemente autenticado)
+    const { user: session, error } = await requireAuth(request);
+    if (error) return error;
+
+    // Solo empleados pueden crear solicitudes
+    if (session.rol !== "empleado") {
+      return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
     }
 
-    const { tipo, fecha_inicio, fecha_fin, motivo } = await request.json();
-
-    if (!tipo || !fecha_inicio || !fecha_fin) {
-      return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
+    // 2. Validar body
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Cuerpo de la petición inválido" }, { status: 400 });
     }
+
+    const { ok, data, response: validationError } = validate(crearSolicitudSchema, body);
+    if (!ok) return validationError;
+
+    const { tipo, fecha_inicio, fecha_fin, motivo } = data;
 
     const db = getDb();
     await db.execute({
@@ -65,7 +80,7 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
+    console.error("Create request error:", error);
     return NextResponse.json({ error: "Error del servidor" }, { status: 500 });
   }
 }
@@ -74,26 +89,58 @@ export async function POST(request) {
 export async function PATCH(request) {
   try {
     await initDb();
-    const session = await getSession();
-    if (!session || session.rol !== "admin") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    
+    // 1. Autorizar como administrador
+    const { user, error } = await requireAdmin(request);
+    if (error) return error;
+
+    // 2. Validar body
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Cuerpo de la petición inválido" }, { status: 400 });
     }
 
-    const { id, estado, respuesta_admin } = await request.json();
+    const { ok, data, response: validationError } = validate(responderSolicitudSchema, body);
+    if (!ok) return validationError;
 
-    if (!id || !estado) {
-      return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
-    }
+    const { id, estado, respuesta_admin } = data;
 
     const db = getDb();
+
+    // Obtener detalles de la solicitud antes de responder para auditoría
+    const { rows: targetRows } = await db.execute({
+      sql: `SELECT s.tipo, s.fecha_inicio, s.fecha_fin, u.nombre, u.email 
+            FROM solicitudes s 
+            JOIN usuarios u ON s.usuario_id = u.id 
+            WHERE s.id = ? LIMIT 1`,
+      args: [id]
+    });
+    const targetRequest = targetRows[0];
+
     await db.execute({
       sql: "UPDATE solicitudes SET estado = ?, respuesta_admin = ? WHERE id = ?",
       args: [estado, respuesta_admin || null, id],
     });
 
+    // Registrar acción de auditoría
+    if (targetRequest) {
+      const accion = estado === "aprobado" ? "Aprobar solicitud" : "Rechazar solicitud";
+      await registrarAccion(user.id, user.email, accion, {
+        solicitud_id: id,
+        tipo: targetRequest.tipo,
+        fecha_inicio: targetRequest.fecha_inicio,
+        fecha_fin: targetRequest.fecha_fin,
+        empleado_nombre: targetRequest.nombre,
+        empleado_email: targetRequest.email,
+        respuesta_admin
+      });
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
+    console.error("Respond request error:", error);
     return NextResponse.json({ error: "Error del servidor" }, { status: 500 });
   }
 }

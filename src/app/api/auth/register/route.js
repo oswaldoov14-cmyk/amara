@@ -1,25 +1,23 @@
 import { NextResponse } from "next/server";
 import { getDb, initDb } from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { validate, registroSchema } from "@/lib/validation";
 
 export async function POST(request) {
   try {
     await initDb();
-    const { nombre, email, password } = await request.json();
-
-    if (!nombre || !email || !password) {
-      return NextResponse.json(
-        { error: "Todos los campos (nombre, correo, contraseña) son obligatorios." },
-        { status: 400 }
-      );
+    
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Cuerpo de la petición inválido" }, { status: 400 });
     }
 
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: "La contraseña debe tener al menos 6 caracteres." },
-        { status: 400 }
-      );
-    }
+    const { ok, data, response: errorResponse } = validate(registroSchema, body);
+    if (!ok) return errorResponse;
+
+    const { nombre, email, password } = data;
 
     const db = getDb();
     const cleanEmail = email.toLowerCase().trim();
@@ -59,3 +57,4 @@ export async function POST(request) {
     );
   }
 }
+

@@ -1,25 +1,30 @@
 import { NextResponse } from "next/server";
 import { getDb, initDb } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
+import { validate, asistenciaSchema } from "@/lib/validation";
 import { calcularDistancia, esTarde, calcularHorasTrabajadas, fechaHoy } from "@/lib/utils";
 
 // POST: Registrar entrada o salida
 export async function POST(request) {
   try {
     await initDb();
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    
+    // 1. Autenticar
+    const { user: session, error } = await requireAuth(request);
+    if (error) return error;
+
+    // 2. Validar body
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Cuerpo de la petición inválido" }, { status: 400 });
     }
 
-    const { lat, lng, tipo, aclaracion } = await request.json();
+    const { ok, data, response: validationError } = validate(asistenciaSchema, body);
+    if (!ok) return validationError;
 
-    if (!lat || !lng) {
-      return NextResponse.json(
-        { error: "Se requieren coordenadas GPS" },
-        { status: 400 }
-      );
-    }
+    const { lat, lng, tipo, aclaracion } = data;
 
     const db = getDb();
 
@@ -70,7 +75,7 @@ export async function POST(request) {
       const tarde = esTarde(horaActual, usuario.horario_entrada || config.horario_entrada);
       const estado = tarde ? "Tarde" : "A tiempo";
 
-      if (tarde && !aclaracion) {
+      if (tarde && (!aclaracion || !aclaracion.trim())) {
         return NextResponse.json({
           error: "aclaracion_requerida",
           mensaje: "Llegaste tarde. Por favor escribe el motivo de tu retraso.",
@@ -103,7 +108,7 @@ export async function POST(request) {
     } else if (tipo === "salida") {
       if (registros.length === 0 || !registros[0].hora_entrada) {
         return NextResponse.json(
-          { error: "No tienes registrada la entrada de hoy" },
+          { error: "No hay entrada registrada hoy." },
           { status: 400 }
         );
       }
@@ -142,10 +147,10 @@ export async function POST(request) {
 export async function GET(request) {
   try {
     await initDb();
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-    }
+    
+    // 1. Autenticar
+    const { user: session, error } = await requireAuth(request);
+    if (error) return error;
 
     const { searchParams } = new URL(request.url);
     const mes = searchParams.get("mes"); // formato YYYY-MM
